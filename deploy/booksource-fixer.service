@@ -1,0 +1,16 @@
+[Unit]
+Description=Booksource Fixer local web tool
+After=network.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+ExecStart=/opt/booksource-fixer/booksource-fixer --host 0.0.0.0 --port 8080
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+node_modules
+.tools
+release
+verification
+.git
+server/web
+bin
+!bin/linux-amd64
+!bin/linux-arm64
+.env
+.env.*
+coverage

@@ -1,0 +1,16 @@
+node_modules/
+.tools/
+release/
+verification/
+server/web/
+bin/
+coverage/
+.env
+.env.*
+!.env.example
+*.log
+*.exe
+*.exe~
+*.zip
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+{
+  "name": "booksource-fixer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "release": "node scripts/release.mjs"
+  },
+  "dependencies": { "fflate": "^0.8.2", "jsonc-parser": "^3.3.1" },
+  "devDependencies": { "@types/node": "^24.0.0", "tsx": "^4.20.0", "typescript": "^5.9.0", "vite": "^7.2.0" }
+}

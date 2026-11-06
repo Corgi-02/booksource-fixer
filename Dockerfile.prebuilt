@@ -1,0 +1,10 @@
+# Offline runtime image: put the matching static Linux program in bin/linux-${TARGETARCH}/.
+FROM scratch
+ARG TARGETARCH=amd64
+COPY --chmod=0555 bin/linux-${TARGETARCH}/booksource-fixer /booksource-fixer
+COPY licenses /licenses
+COPY THIRD_PARTY_NOTICES.md /licenses/THIRD_PARTY_NOTICES.md
+USER 65532:65532
+EXPOSE 8080
+ENTRYPOINT ["/booksource-fixer"]
+CMD ["--host","0.0.0.0","--port","8080","--no-open"]
