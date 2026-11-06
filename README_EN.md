@@ -93,6 +93,27 @@ docker run -d --name booksource-fixer -p 8080:8080 \
 
 For ARM64, use the `linux-arm64` directory and `TARGETARCH=arm64`. The default `Dockerfile` instead builds the complete application from source in multiple stages.
 
+### Network access scope
+
+Native Windows and Linux programs listen on `127.0.0.1` by default. The Docker images listen on `0.0.0.0:8080` inside the container. The repository's Compose example publishes `8080:8080` on all host interfaces, and the systemd example also uses `--host 0.0.0.0`. These examples support LAN access; actual reachability depends on routing, firewall rules, and port forwarding. Dockerfile `EXPOSE` declarations document container ports; Compose or `docker run -p` controls publication.
+
+**The service has no built-in authentication.** Its HTTP endpoints serve static assets, health checks, and version information. Source files are processed in each visitor's own browser. Processing location and network access scope are separate settings.
+
+For local-only use, optionally bind the Compose host port to loopback:
+
+```yaml
+ports:
+  - "127.0.0.1:8080:8080"
+```
+
+The equivalent `docker run` flag is `-p 127.0.0.1:8080:8080`; the container can retain its internal `0.0.0.0` listener. Native programs can keep their default address. For systemd, the service's `ExecStart` can instead use:
+
+```ini
+ExecStart=/opt/booksource-fixer/booksource-fixer --host 127.0.0.1 --port 8080
+```
+
+For LAN deployment, restrict allowed source hosts with a firewall or use a controlled reverse proxy. For access across untrusted networks, configure authentication and HTTPS at the reverse proxy before exposing an entry point. These are deployment-specific options; the repository's default listeners and port mappings retain their LAN-oriented configuration.
+
 ## Workflow
 
 1. Select or drop JSON files. Limits are **50 MiB per file** and **100 MiB per queue**. Files are processed sequentially; processing can be cancelled or cleared.
@@ -104,6 +125,12 @@ For ARM64, use the `linux-arm64` directory and `TARGETARCH=arm64`. The default `
 Ordinary JSON, empty arrays, and irrecoverable files are not converted into fake book sources. Truncation, broken strings or escapes, and duplicate JSON keys stop file repair and report a position. Reports and excluded records can still be downloaded for non-source files. A direct save link is provided if automatic downloading does not start.
 
 Supported encodings are UTF-8 and BOM-marked UTF-16LE/BE. Clearing or refreshing releases in-memory files and results. Original files are not overwritten, and no processing history is stored.
+
+### Check exported files before sharing
+
+Imported sources may contain login headers, cookies, tokens, login URLs with sensitive query parameters, private network or service addresses, and other custom sensitive fields. The engine preserves unknown fields and non-empty rules to retain source functionality, so repaired files and excluded records may retain that information.
+
+Reports may also include input filenames, source names, URLs, and before/after field values. Result ZIPs package the related exports. **Manually inspect and redact repaired sources, reports, excluded records, and ZIPs before sharing them. Treat exports with the same sensitivity as their original sources.** Browser-local processing reduces the upload step; sharing downloaded files remains the user's decision.
 
 ## Compatibility and limits
 
